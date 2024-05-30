@@ -64,31 +64,50 @@ def program():
             new_image = Image.fromarray(compressed_image)
             new_image.save("compressed_" + image_name)
             
-        elif choice == "4":
-            # Matrix multiplication approach
-            start_time_matrix = time.time()
-            compressed_image_matrix = HaarWaveletsfunctions.HWT(A)
-            end_time_matrix = time.time()
-    
-            plt.imshow(compressed_image_matrix, cmap='gray')
-            plt.title('Compressed image')
-            plt.show(block=True)
+       elif choice == "4":
+    # Matrix multiplication approach
+    start_time_matrix = time.time()
+    compressed_image_matrix = HaarWaveletsfunctions.HWT(A)
+    end_time_matrix = time.time()
 
-            # Direct transformation approach
-            start_time_direct = time.time()
-            A = A / 255.0  # Normalize 
-            compressed_image_direct = HaarWaveletsfunctions.HWT_direct(A)
-            end_time_direct = time.time()
+    # Direct transformation approach
+    start_time_direct = time.time()
+    A = A / 255.0  # Normalize 
+    compressed_image_direct = HaarWaveletsfunctions.HWT_direct(A)
+    end_time_direct = time.time()
 
-            # Scaling and clipping for display
-            compressed_image_direct = np.clip(compressed_image_direct, 0, 1) * 255
-            compressed_image_direct = compressed_image_direct.astype(np.uint8)
-            plt.imshow(compressed_image_direct, cmap='gray')
-            plt.title('Compressed image, modified code')
-            plt.show(block=True)
+    # Prepare to display four images: original, matrix approach, direct approach, and another placeholder if needed
+    fig, axs = plt.subplots(1, 4, figsize=(12, 3))  # Create 1 row, 4 columns of images
 
-            print(f"Matrix multiplication time: {end_time_matrix - start_time_matrix:.6f} seconds")
-            print(f"Direct transformation time: {end_time_direct - start_time_direct:.6f} seconds")
+    # Display original image
+    axs[0].imshow(A * 255, cmap='gray')  # Scale back for display
+    axs[0].set_title('Original image')
+    axs[0].axis('off')  # Hide axes for better visibility
+
+    # Display matrix compressed image
+    axs[1].imshow(compressed_image_matrix, cmap='gray')
+    axs[1].set_title('Matrix approach')
+    axs[1].axis('off')
+
+    # Scaling and clipping for display for the direct method
+    compressed_image_direct = np.clip(compressed_image_direct, 0, 1) * 255
+    compressed_image_direct = compressed_image_direct.astype(np.uint8)
+
+    # Display direct compressed image
+    axs[2].imshow(compressed_image_direct, cmap='gray')
+    axs[2].set_title('Direct approach')
+    axs[2].axis('off')
+
+    # Placeholder for a possible fourth image or reuse for additional information
+    axs[3].text(0.5, 0.5, 'Additional Info', horizontalalignment='center', verticalalignment='center', fontsize=12, color='red')
+    axs[3].axis('off')
+
+    plt.tight_layout()
+    plt.show(block=True)
+
+    # Print time statistics
+    print(f"Matrix multiplication time: {end_time_matrix - start_time_matrix:.6f} seconds")
+    print(f"Direct transformation time: {end_time_direct - start_time_direct:.6f} seconds")
         elif choice == "5":
             break
 program()
