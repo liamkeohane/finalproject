@@ -127,4 +127,46 @@ def HWT_modified(A):
     if N % 2 != 0:
         A = A[:, :-1]  
         N -= 1  
+        
 # Function for compression of image such as HWT(A) but without matrix multiplication
+def HWT_direct(A):
+    """
+    Performs the Haar Wavelet Transform on a 2D image array directly without matrix multiplication.
+
+    Args:
+        A: The input image array (2D numpy array).
+
+    Returns:
+        The Haar wavelet transformed image array.
+    """
+    
+    M, N = A.shape
+
+    # Ensure even dimensions for the transformation
+    if M % 2 != 0:
+        A = A[:-1, :]    # Remove the last row if odd number of rows
+        M -= 1
+    if N % 2 != 0:
+        A = A[:, :-1]    # Remove the last column if odd number of columns
+        N -= 1
+
+    result = A.copy().astype(float)  # Make a copy and convert to float for accurate calculations
+
+    for level in range(int(np.log2(min(M, N)))):  # Iterate over the levels of decomposition
+        M_level, N_level = M // 2**level, N // 2**level   # Dimensions of the current sub-band
+
+        # Row transformation
+        result[0::2, :N_level] = (result[0::2, :N_level] + result[1::2, :N_level]) / 2  
+        # Average adjacent rows and store in even rows (0, 2, 4...) up to N_level columns
+
+        result[1::2, :N_level] = (result[0::2, :N_level] - result[1::2, :N_level]) / 2
+        # Subtract adjacent rows and store in odd rows (1, 3, 5...) up to N_level columns
+
+        # Column transformation
+        result[:M_level, 0::2] = (result[:M_level, 0::2] + result[:M_level, 1::2]) / 2
+        # Average columns and store in even columns (0, 2, 4...) up to M_level rows
+
+        result[:M_level, 1::2] = (result[:M_level, 0::2] - result[:M_level, 1::2]) / 2
+        # Subtract  columns and store in odd columns (1, 3, 5...) up to M_level rows
+
+    return result  # Return the transformed array containing Haar wavelet coefficients
